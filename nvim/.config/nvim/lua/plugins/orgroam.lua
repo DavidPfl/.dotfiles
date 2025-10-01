@@ -10,6 +10,18 @@ return {
   config = function()
     require("org-roam").setup({
       directory = "~/org/roam",
+      templates = {
+        d = {
+          description = "default",
+          template = "%?",
+          target = "%<%Y%m%d%H%M%S>-%[slug].org",
+        },
+        n = {
+          description = "normal",
+          template = "%?",
+          target = "%[slug].org",
+        },
+      },
       -- optional
       org_files = {
         -- "~/another_org_dir",
