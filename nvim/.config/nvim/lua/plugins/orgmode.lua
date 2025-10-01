@@ -26,12 +26,40 @@ return {
         },
       },
     })
-
-    -- require("telescope").setup()
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "org",
+      callback = function(event)
+        vim.keymap.set("n", "<leader>or", function()
+          require("telescope").extensions.orgmode.refile_heading()
+        end, {
+          buffer = event.buf,
+          -- noremap = true,
+          silent = true,
+          nowait = true,
+          desc = "Org: Refile (Telescope)",
+        })
+      end,
+    })
+    require("telescope").setup({})
     require("telescope").load_extension("orgmode")
-    vim.keymap.set("n", "<leader>r", require("telescope").extensions.orgmode.refile_heading)
-    vim.keymap.set("n", "<leader>fh", require("telescope").extensions.orgmode.search_headings)
-    vim.keymap.set("n", "<leader>li", require("telescope").extensions.orgmode.insert_link)
+    vim.keymap.set(
+      "n",
+      "<leader>or",
+      require("telescope").extensions.orgmode.refile_heading,
+      { desc = "refile (telescope)" }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>of",
+      require("telescope").extensions.orgmode.search_headings,
+      { desc = "search headings" }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>oil",
+      require("telescope").extensions.orgmode.insert_link,
+      { noremap = true, desc = "insert link" }
+    )
     -- Your todo keywords (adjust as needed)
     local todo_keywords = {
       "TODO(t)",
@@ -136,13 +164,18 @@ return {
     end, {})
     -- Setup orgmode
     orgmode.setup(vim.tbl_extend("force", opts or {}, {
-      org_agenda_files = agenda_files_cache,
+      org_agenda_files = "~/org/roam/**/*",
+      -- org_agenda_files = agenda_files_cache,
       org_default_notes_file = "~/org/roam/refile.org",
       org_todo_keywords = todo_keywords,
       calendar_week_start_day = 1,
       org_hide_leading_stars = true,
       org_indent_mode = "indent",
       org_startup_folded = "overview",
+      org_id_link_to_org_use_id = true,
+      mappings = {
+        org_refile = false,
+      },
     }))
     -- Autocmd to update the cache on save
     vim.api.nvim_create_autocmd("BufWritePost", {
