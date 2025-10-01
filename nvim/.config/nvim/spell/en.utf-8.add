@@ -1,0 +1,8 @@
+DOCKERFILE
+WORKDIR
+Dockerfile
+CMD
+ENTRYPOINT
+hostname
+localhost
+ereignismonitor
