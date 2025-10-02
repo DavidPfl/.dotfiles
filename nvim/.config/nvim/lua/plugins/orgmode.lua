@@ -10,7 +10,7 @@ return {
   event = "VeryLazy",
   config = function(_, opts)
     local orgmode = require("orgmode")
-    require("headlines").setup()
+    -- require("headlines").setup()
     require("org-bullets").setup()
     require("blink.cmp").setup({
       sources = {
@@ -37,6 +37,15 @@ return {
           silent = true,
           nowait = true,
           desc = "Org: Refile (Telescope)",
+        })
+      end,
+    })
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "org",
+      callback = function()
+        vim.keymap.set("i", "<S-CR>", '<cmd>lua require("orgmode").action("org_mappings.meta_return")<CR>', {
+          silent = true,
+          buffer = true,
         })
       end,
     })
@@ -171,10 +180,17 @@ return {
       calendar_week_start_day = 1,
       org_hide_leading_stars = true,
       org_indent_mode = "indent",
-      org_startup_folded = "overview",
+      -- org_startup_folded = "overview",
       org_id_link_to_org_use_id = true,
       mappings = {
         org_refile = false,
+      },
+      org_todo_keyword_faces = {
+        TODO = ":foreground #f38ba8 :weight bold", -- Catppuccin red
+        PROG = ":foreground #89b4fa :weight bold", -- Catppuccin blue
+        READ = ":foreground #cba6f7 :weight bold", -- Catppuccin blue
+        DONE = ":foreground #a6da95 :weight bold", -- Catppuccin green
+        HOLD = ":foreground #f0c6c6 :slant italic", -- Catppuccin pink/mauve
       },
     }))
     -- Autocmd to update the cache on save
