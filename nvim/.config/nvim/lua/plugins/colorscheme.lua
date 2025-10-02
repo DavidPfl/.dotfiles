@@ -1,5 +1,6 @@
 return {
-  {},
+  -- { "catppuccin/nvim", name = "catppuccin", priority = 1000 },
+  -- {},
   -- {
   --   "rebelot/kanagawa.nvim",
   --   init = function() --this is a fix to avoid black spludges in statusline,. from https://github.com/rebelot/kanagawa.nvim/issues/243#issuecomment-2614627261
@@ -64,4 +65,10 @@ return {
   --     vim.cmd("colorscheme kanagawa")
   --   end,
   -- },
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "tokyonight-moon",
+    },
+  },
 }
