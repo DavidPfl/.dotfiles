@@ -3,3 +3,6 @@
 -- Add any additional options here
 vim.g.snacks_animate = false
 vim.opt.relativenumber = false
+-- Keep folding but start with all folds open
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
