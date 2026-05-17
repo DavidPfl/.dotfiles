@@ -1,0 +1,19 @@
+# tmux plugins - managed by TPM at runtime
+tmux/.tmux/plugins/
+
+# Ghidra runtime files
+ghidra/.config/ghidra/ghidra_12.1_PUBLIC/application.log
+ghidra/.config/ghidra/ghidra_12.1_PUBLIC/application.log-*
+ghidra/.config/ghidra/ghidra_12.1_PUBLIC/osgi/
+ghidra/.config/ghidra/ghidra_12.1_PUBLIC/preferences
+ghidra/.config/ghidra/ghidra_12.1_PUBLIC/script.log
+ghidra/.config/ghidra/ghidra_12.1_PUBLIC/tools/*.tcd
+ghidra/.config/ghidra/lastrun
+
+# Go telemetry
+go/.config/go/telemetry/
+
+# opencode node_modules
+opencode/.config/opencode/node_modules/
+opencode/.config/opencode/package-lock.json
+opencode/.config/opencode/package.json
