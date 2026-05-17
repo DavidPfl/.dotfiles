@@ -1,0 +1,19 @@
+#User Preferences
+#Sat May 16 11:32:26 CEST 2026
+G_FILE_CHOOSER.HEIGHT.Select\ File\ to\ Import=600
+G_FILE_CHOOSER.VIEW_STYLE.Select\ File\ to\ Import=SimpleView
+G_FILE_CHOOSER.WIDTH.Select\ File\ to\ Import=800
+GhidraShowWhatsNew=false
+IMPORTER_DIALOG_LAST_FOLDER=/
+LAST_USED_OPTIONS_CONFIG=Standard Defaults
+LastImportFile=/home/david/.local/bin/kiro-cli-term
+LastOpenedProject=/home/david/open-kiro
+ProjectDirectory=/home/david/
+RECENT_0=/home/david/.local/bin
+RecentProjects=/home/david/open-kiro
+SHOW.HELP.NAVIGATION.AID=true
+SHOW_TIPS=true
+TIP_INDEX=5
+Theme=Class\:generic.theme.builtin.FlatLightTheme
+USER_AGREEMENT=ACCEPT
+ViewedProjects=
