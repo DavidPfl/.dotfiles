@@ -38,6 +38,8 @@
           "wc *": "allow",
           "curl *": "allow",
           "wget *": "allow",
+          "mvn": "allow",
+          "mvn *": "allow",
           "rm *": "deny",
           "rmdir *": "deny",
           "sudo *": "deny"
