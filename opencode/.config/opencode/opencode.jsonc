@@ -1,5 +1,8 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "model": "opencode-go/glm-5.2",                 // daily driver — community "safe choice," most popular
+  "small_model": "opencode-go/mimo-v2.5", // titles & lightweight housekeeping (zero-retention, no training)
+  "compaction": { "auto": true, "prune": true, "reserved": 10000 },
   "lsp": true,
   "agent": {
     "build": {
@@ -74,6 +77,13 @@
           "*": "ask"
         }
       }
-    }
+    },
+    "plan":       { "model": "opencode-go/qwen3.7-max" },    // #1 on Go (60.6% SWE-Pro) — deep planning
+    "explore":    { "model": "opencode-go/mimo-v2.5" },     // 30.1K req/5hr, never rate-limited
+    "general":    { "model": "opencode-go/deepseek-v4-pro" }, // 1M ctx, 80.6% SWE-Verified, ~3x cheaper than GLM
+    "scout":      { "model": "opencode-go/mimo-v2.5" },     // external docs research
+    "compaction": { "model": "opencode-go/mimo-v2.5" },    // hidden — sees whole context, cheapest
+    "title":      { "model": "opencode-go/mimo-v2.5" },     // hidden
+    "summary":    { "model": "opencode-go/mimo-v2.5" }      // hidden
   }
 }
