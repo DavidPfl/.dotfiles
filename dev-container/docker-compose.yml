@@ -1,0 +1,52 @@
+services:
+  pi:
+    build:
+      context: ./scripts
+      dockerfile: Containerfile.pi
+    image: pi-sandbox:latest
+    stdin_open: true
+    tty: true
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - .:/workspace
+      - ~/.pi/agent:/root/.pi/agent
+      - ~/.agents:/root/.agents
+      - ./searxng/ketch-config.json:/root/.config/ketch/config.json:ro
+      - ${DOCKER_SOCK}:/var/run/docker.sock
+    depends_on:
+      searxng:
+        condition: service_healthy
+    networks:
+      - pi-net
+
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    environment:
+      - SEARXNG_PORT=8100
+    volumes:
+      - ./searxng/settings.yml:/etc/searxng/settings.yml:ro
+      - ./searxng/limiter.toml:/etc/searxng/limiter.toml:ro
+    networks:
+      - pi-net
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://localhost:8100/healthz",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+      start_period: 10s
+    # Uncomment if you want to browse the SearXNG UI directly from the host:
+    # ports:
+    #   - "8100:8100"
+
+networks:
+  pi-net:
