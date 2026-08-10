@@ -1,0 +1,14 @@
+use_default_settings: true
+server:
+  secret_key: "4be367faf2363e5dde72aed0154d7cf2f81830c5f2db2bde2b6e8fabdd4f9b97"
+search:
+  formats:
+    - html
+    - json
+engines:
+  - name: ahmia
+    disabled: true
+  - name: torch
+    disabled: true
+  - name: wikidata
+    disabled: true

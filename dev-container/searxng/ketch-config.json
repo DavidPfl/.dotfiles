@@ -1,0 +1,4 @@
+{
+  "backend": "searxng",
+  "searxng_url": "http://searxng:8100"
+}

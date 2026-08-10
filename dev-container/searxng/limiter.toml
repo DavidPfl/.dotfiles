@@ -1,0 +1,4 @@
+# SearXNG bot detection limiter configuration
+[botdetection.ip_limit]
+# Activate link_token method in the ip_limit
+link_token = true
