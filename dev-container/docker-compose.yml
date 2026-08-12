@@ -22,7 +22,6 @@ services:
 
   searxng:
     image: searxng/searxng:latest
-    container_name: searxng
     environment:
       - SEARXNG_PORT=8100
     volumes:
@@ -44,9 +43,8 @@ services:
       timeout: 3s
       retries: 15
       start_period: 10s
-    # Uncomment if you want to browse the SearXNG UI directly from the host:
-    # ports:
-    #   - "8100:8100"
+    ports:
+      - "8100:8100"
 
 networks:
   pi-net:
