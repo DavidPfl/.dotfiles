@@ -46,6 +46,16 @@ Use only these terms in ketch output.
 
 One question = one plan. Escalate a default run into `ketch research` when the first search shows the answer is contested, multi-part, or needs corroboration.
 
+## Local searxng backend — preflight before every search
+
+The operator's search backend is a **self-hosted searxng container**, not a third-party API. It is required for every `search` call (the configured default backend is `searxng`), so check it is running before the first search in a session — and start it when it is not. This is a one-time housekeeping step, not a configuration mutation.
+
+- **Check:** `docker ps --filter name=searxng --filter status=running --format '{{.Names}}'` — non-empty means the container is up.
+- **Start when down:** `docker compose -f ~/git/searxng/docker-compose.yml up -d --wait` — blocks until the `/healthz` healthcheck passes, so a green exit means ketch can reach `http://localhost:8100` right away.
+- **The config already points at it:** `ketch config` shows `backend: searxng`, `searxng_url: http://localhost:8100`. Do not re-run `ketch config set` — the container is the only thing that can be down, and a container is started with docker, not `config set`.
+- **Do not restart a healthy container.** If the check passes, move on. Starting it again is at best a waste and at worst kills a warm cache.
+- **If search still fails after the container is healthy** — exit 4 / `[upstream]` — the instance is up but rejecting requests (e.g. `format=json` disabled). Read `references/verbs/setup.md` before touching anything; do not rotate to a keyed backend on your own.
+
 ## Non-negotiable disciplines
 
 1. **Use the transport the operator gave you.** The CLI is the default; MCP tools in your list mean the operator opted in — use them for research rather than shelling out around them. When both are live, either serves research calls (a running MCP server holds the page-cache lock, so concurrent CLI scrapes run uncached); operator actions — config, cache, browser, background crawls, doctor — are always CLI.

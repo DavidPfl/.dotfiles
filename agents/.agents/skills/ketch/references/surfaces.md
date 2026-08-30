@@ -29,6 +29,7 @@ The two transports expose the same options under different spellings. Both direc
 ## search
 
 - Backends: `brave` (default when unconfigured; free API key), `ddg` (zero setup; rate-limits readily under fan-out), `searxng` (self-hosted; needs a JSON-enabled instance — see the setup verb), `exa` (zero config), `firecrawl` (Firecrawl v2 search API; hosted needs `firecrawl_api_key`, self-hosted via `firecrawl_url`), `keenable` (keyless by default; optional `keenable_api_key` lifts the rate limit), `tavily` (keyed; extracted content in results; `tavily_api_key`).
+- The operator's default backend is **searxng** via a local docker container (`searxng_url: http://localhost:8100`). Before the first search in a session, run the searxng preflight (SKILL.md "Local searxng backend") — start the container with `docker compose -f ~/git/searxng/docker-compose.yml up -d --wait` if `docker ps` shows it down. Do not `config set` anything.
 - The effective default backend is operator-configured: **omit `backend` to use it**; `ketch config` shows which it is.
 - `--scrape` / `scrape: true` fetches each result's full content — budget it exactly like a scrape (`max_chars`, `trim`).
 - `--minimal` (CLI): one result per line, tab-separated url/title/snippet (a 4th backends column is appended under `--multi` for plain search; `--scrape --minimal` keeps 3 columns).
