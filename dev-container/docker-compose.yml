@@ -6,14 +6,11 @@ services:
     image: pi-sandbox:latest
     stdin_open: true
     tty: true
-    environment:
-      - DOCKER_HOST=unix:///var/run/docker.sock
     volumes:
       - .:/workspace
       - ~/.pi/agent:/root/.pi/agent
       - ~/.agents:/root/.agents
       - ./searxng/ketch-config.json:/root/.config/ketch/config.json:ro
-      - ${DOCKER_SOCK}:/var/run/docker.sock
     depends_on:
       searxng:
         condition: service_healthy
