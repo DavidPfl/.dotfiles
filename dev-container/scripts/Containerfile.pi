@@ -27,7 +27,7 @@ RUN set -euo pipefail \
 RUN npm install -g --ignore-scripts @earendil-works/pi-coding-agent
 
 # ketch: fast stateless CLI for web search, code search, docs, scrape, and crawl
-ARG KETCH_VERSION=v0.14.0
+ARG KETCH_VERSION=v0.16.2
 RUN set -euo pipefail \
   && curl -fsSL "https://github.com/1broseidon/ketch/releases/download/${KETCH_VERSION}/ketch_${KETCH_VERSION#v}_linux_$(uname -m).tar.gz" \
   | tar xz -C /usr/local/bin ketch \
