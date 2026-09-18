@@ -1,0 +1,64 @@
+nerdfont: true # Enable nerdfont icons (prompted on first run)
+merge_strategy: rebase # Make workmux merge do rebase by default
+merge_keep: true # Keep worktree, window, and branch after merge by default
+agent: pi
+
+panes:
+  - command: <agent> # Start the configured agent (e.g., claude)
+    focus: true
+  - split: horizontal # Second pane with default shell
+agents:
+  pi-worker-home:
+    type: pi
+    command: pi
+    args:
+      - --model
+      - opencode-go/deepseek-v4.1-flash
+      - --thinking
+      - high
+#-------------------------------------------------------------------------------
+# Sandbox
+#-------------------------------------------------------------------------------
+
+sandbox:
+  enabled: false
+  image: my-sandbox
+  #   backend: lima
+  #   # host_commands: ["just", "cargo", "npm"]
+  container:
+  #   #   runtime: docker          # docker | podman | apple-container
+  #   #   # memory: 16G            # VM memory limit (apple-container default: 16G)
+  #   #   # cpus: 4                # VM CPU count (only passed when set)
+  #   #   # OCI runtime to run under (docker/local Podman --runtime). Unset omits
+  #   #   # the flag and uses the engine's configured default.
+  #   #   # Set to e.g. "kata" for VM-based isolation (runtime must be installed
+  #   #   # and registered). GLOBAL-ONLY: ignored in a project .workmux.yaml.
+  #   #   # oci_runtime: kata
+  #   #   # Extra capabilities / security options (docker/podman --cap-add /
+  #   #   # --security-opt). Empty by default and GLOBAL-ONLY. Permissive values
+  #   #   # weaken host-kernel container isolation unless paired with a VM runtime.
+  #   #   # Main use: docker-in-docker under oci_runtime: kata.
+  #   #   # cap_add: [ALL]
+  #   #   # security_opt: [seccomp=unconfined, apparmor=unconfined, systempaths=unconfined]
+  #   #   # Mask files out of the worktree bind mounts (paths relative to the
+  #   #   # worktree root). Each listed file is shadowed by /dev/null so the
+  #   #   # sandboxed agent cannot read it. Missing files are skipped.
+  #   #   # GLOBAL-ONLY: ignored when set in a project .workmux.yaml.
+  excluded_files:
+    - .env
+      # - .env.local
+#   # lima:
+#   #   isolation: project
+#   #   cpus: 4
+#   #   memory: 4GiB
+#   #   # Custom provision script (runs once on VM creation, as user).
+#   #   # Use sudo for system commands.
+#   #   # provision: |
+#   #   #   sudo apt-get install -y ripgrep fd-find jq
+#   # Extra mount points (read-only by default).
+#   # Supports simple paths or detailed specs with guest_path and writable.
+#   # extra_mounts:
+#   #   - ~/my-notes
+#   #   - host_path: ~/data
+#   #     guest_path: /mnt/data
+#   #     writable: true
