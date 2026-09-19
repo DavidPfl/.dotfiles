@@ -21,12 +21,19 @@ agents:
 #-------------------------------------------------------------------------------
 
 sandbox:
-  enabled: false
+  enabled: true
   image: my-sandbox
-  #   backend: lima
-  #   # host_commands: ["just", "cargo", "npm"]
+  backend: container
+  host_commands: ["ketch"]
+  # Make the ~/.pi/agent symlink farm resolvable inside the sandbox:
+  # skills symlinks -> ~/.agents/skills, prompts/agents/extensions -> ~/.dotfiles/pi
+  extra_mounts:
+    - host_path: ~/.agents
+      guest_path: /tmp/.agents
+    - host_path: ~/.dotfiles/pi
+      guest_path: /tmp/.dotfiles/pi
   container:
-  #   #   runtime: docker          # docker | podman | apple-container
+    runtime: podman # docker | podman | apple-container
   #   #   # memory: 16G            # VM memory limit (apple-container default: 16G)
   #   #   # cpus: 4                # VM CPU count (only passed when set)
   #   #   # OCI runtime to run under (docker/local Podman --runtime). Unset omits
