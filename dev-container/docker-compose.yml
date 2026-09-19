@@ -41,7 +41,18 @@ services:
       retries: 15
       start_period: 10s
     ports:
-      - "8100:8100"
+      # 127.0.0.1: for access from the host itself
+      # 172.17.0.1: docker0 gateway, so ANY container (any bridge network)
+      # can reach searxng at http://172.17.0.1:8100 without joining pi-net.
+      # IP from: ip addr show docker0 | grep inet
+      # Rootless Docker (rootlesskit) publishes ports on the HOST's interfaces,
+      # NOT on the docker0 bridge gateway. So 172.17.0.1:8100 does NOT work from
+      # containers here. Reachability:
+      #   - containers in this project: http://searxng:8100 (pi-net)
+      #   - any other container:        http://<host-ip>:8100 (e.g. 192.168.1.52,
+      #     `ip -4 route get 1.1.1.1 | grep -oP 'src \K[0-9.]+')
+      #   - host/localhost:             http://127.0.0.1:8100
+      - "127.0.0.1:8100:8100"
 
 networks:
   pi-net:
