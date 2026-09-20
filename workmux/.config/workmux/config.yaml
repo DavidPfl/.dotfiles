@@ -3,6 +3,11 @@ merge_strategy: rebase # Make workmux merge do rebase by default
 merge_keep: true # Keep worktree, window, and branch after merge by default
 agent: pi
 
+# Don't let workmux override window-status-format with its own plain style.
+# The agent status icon (#{@workmux_status}) is rendered inside the catppuccin
+# rounded window pill instead (see @catppuccin_window_*_text in ~/.tmux.conf).
+status_format: false
+
 panes:
   - command: <agent> # Start the configured agent (e.g., claude)
     focus: true
