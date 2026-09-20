@@ -47,6 +47,13 @@ ARG CACHE_BUST=1
 # Install workmux (needed for sandbox RPC)
 RUN curl -fsSL https://raw.githubusercontent.com/raine/workmux/main/scripts/install.sh | bash
 
+# Install uv (Python package manager). Install into /usr/local/bin so the
+# `uv`/`uvx` binaries are on the global PATH and reachable when running as an
+# arbitrary non-root UID (--user uid:gid), rather than under $HOME/.local/bin.
+# UV_NO_MODIFY_PATH keeps the installer from editing shell profiles.
+RUN curl -LsSf https://astral.sh/uv/install.sh \
+  | env UV_INSTALL_DIR=/usr/local/bin UV_NO_MODIFY_PATH=1 sh
+
 # --- claude agent ---
 ARG CACHE_BUST=1
 
