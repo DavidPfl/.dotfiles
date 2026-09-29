@@ -18,7 +18,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   maven \
   python3 \
   python3-pip \
-  gnupg
+  gnupg \
+  ripgrep \
+  fd-find
+
+# Debian's fd-find package ships the binary as `fdfind` (name clash with an
+# unrelated package called `fd`). pi-coding-agent (and most tooling/docs)
+# expect `fd` on PATH, and otherwise tries to download it at runtime.
+RUN ln -s /usr/bin/fdfind /usr/local/bin/fd
 
 # Optional: trust an internal/corporate CA for networks that TLS-intercept
 # outbound HTTPS (common with corporate proxies/VPNs, or podman machine VMs
@@ -27,6 +34,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # when it's empty, and update-ca-certificates is a no-op if nothing was added.
 COPY certs/ /usr/local/share/ca-certificates/
 RUN update-ca-certificates
+
+# Node bundles its own CA store (Mozilla's list) and ignores the system trust
+# store by default, so update-ca-certificates above doesn't help Node's own
+# fetch()/https calls (e.g. pi-coding-agent downloading ripgrep/fd at runtime).
+# --use-system-ca makes Node defer to the OS store instead, so any corporate
+# CA installed above is honored. This is safe with no CA present too, since
+# the OS store already ships the standard public root CAs.
+ENV NODE_OPTIONS="--use-system-ca"
 
 RUN curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
   | gpg --dearmor -o /usr/share/keyrings/adoptium-archive-keyring.gpg \

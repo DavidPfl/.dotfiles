@@ -30,11 +30,17 @@ sandbox:
   image: my-sandbox
   backend: container
   host_commands: ["ketch"]
-  # Make the ~/.pi/agent symlink farm resolvable inside the sandbox:
-  # skills symlinks -> ~/.agents/skills, prompts/agents/extensions -> ~/.dotfiles/pi
+  # Inside the sandbox HOME=/tmp and ~/.pi/agent is bind-mounted at
+  # /tmp/.pi/agent. Its symlinks (agents/prompts/extensions) are relative
+  # -> ../../.dotfiles/pi/.pi/agent/... i.e. /tmp/.dotfiles/pi, and pi also
+  # scans ~/.agents/skills i.e. /tmp/.agents/skills. Mount the *resolved*
+  # dirs onto those absolute paths so nothing dangles.
   extra_mounts:
-    - host_path: ~/.agents
-      guest_path: /tmp/.agents
+    # Personal skills: follow the ~/.agents/skills -> ~/.dotfiles/agents symlink
+    # to the real dir, mounted where pi discovers Agent Skills.
+    - host_path: ~/.dotfiles/agents/.agents/skills
+      guest_path: /tmp/.agents/skills
+    # Backs the ~/.pi/agent/{agents,prompts,extensions} relative symlinks.
     - host_path: ~/.dotfiles/pi
       guest_path: /tmp/.dotfiles/pi
   container:
