@@ -5,6 +5,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { CONFIG_DIR_NAME, getAgentDir, parseFrontmatter } from "@earendil-works/pi-coding-agent";
+import { parseModelList } from "./models.ts";
 
 export type AgentScope = "user" | "project" | "both";
 
@@ -12,7 +13,8 @@ export interface AgentConfig {
 	name: string;
 	description: string;
 	tools?: string[];
-	model?: string;
+	/** Ordered model preferences from frontmatter; absent means inherit the dispatch model. */
+	models?: string[];
 	systemPrompt: string;
 	source: "user" | "project";
 	filePath: string;
@@ -95,7 +97,7 @@ function loadAgentsFromDir(dir: string, source: "user" | "project"): AgentConfig
 			name: frontmatter.name,
 			description: frontmatter.description,
 			tools: parseToolList(frontmatter.tools),
-			model: typeof frontmatter.model === "string" ? frontmatter.model : undefined,
+			models: parseModelList(frontmatter.model),
 			systemPrompt: body,
 			source,
 			filePath,
