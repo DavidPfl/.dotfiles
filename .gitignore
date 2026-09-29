@@ -17,3 +17,4 @@ go/.config/go/telemetry/
 opencode/.config/opencode/node_modules/
 opencode/.config/opencode/package-lock.json
 opencode/.config/opencode/package.json
+agents/.agents/skills/jira-fetch
