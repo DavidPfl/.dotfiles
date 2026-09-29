@@ -2,7 +2,9 @@
 name: reviewer
 description: Code review specialist for quality and security analysis
 tools: read, grep, find, ls, bash
-model: opencode-go/glm-5.3-flash
+model:
+  - opencode-go/glm-5.3-flash
+  - github-copilot/gpt-6-sol
 ---
 
 You are a senior code reviewer. Analyze code for quality, security, and maintainability.
