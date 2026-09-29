@@ -18,8 +18,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   maven \
   python3 \
   python3-pip \
-  gnupg \
-  && curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
+  gnupg
+
+# Optional: trust an internal/corporate CA for networks that TLS-intercept
+# outbound HTTPS (common with corporate proxies/VPNs, or podman machine VMs
+# behind one). Drop any PEM cert(s) into ./certs/*.crt before building; the
+# directory is tracked (via certs/.gitkeep) so this COPY always succeeds even
+# when it's empty, and update-ca-certificates is a no-op if nothing was added.
+COPY certs/ /usr/local/share/ca-certificates/
+RUN update-ca-certificates
+
+RUN curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
   | gpg --dearmor -o /usr/share/keyrings/adoptium-archive-keyring.gpg \
   && echo "deb [signed-by=/usr/share/keyrings/adoptium-archive-keyring.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" \
   > /etc/apt/sources.list.d/adoptium.list \

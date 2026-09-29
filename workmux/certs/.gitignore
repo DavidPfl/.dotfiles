@@ -1,0 +1,6 @@
+# Ignore any corporate/self-signed CA certs dropped here for local builds
+# (see Dockerfile.sandbox), but keep the directory itself tracked so it
+# always exists in the build context.
+*
+!.gitignore
+!.gitkeep
