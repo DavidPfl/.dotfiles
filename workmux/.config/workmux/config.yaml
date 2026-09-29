@@ -65,18 +65,21 @@ sandbox:
   excluded_files:
     - .env
       # - .env.local
-#   # lima:
-#   #   isolation: project
-#   #   cpus: 4
-#   #   memory: 4GiB
-#   #   # Custom provision script (runs once on VM creation, as user).
-#   #   # Use sudo for system commands.
-#   #   # provision: |
-#   #   #   sudo apt-get install -y ripgrep fd-find jq
-#   # Extra mount points (read-only by default).
-#   # Supports simple paths or detailed specs with guest_path and writable.
-#   # extra_mounts:
-#   #   - ~/my-notes
-#   #   - host_path: ~/data
-#   #     guest_path: /mnt/data
-#   #     writable: true
+  #   # lima:
+  #   #   isolation: project
+  #   #   cpus: 4
+  #   #   memory: 4GiB
+  #   #   # Custom provision script (runs once on VM creation, as user).
+  #   #   # Use sudo for system commands.
+  #   #   # provision: |
+  #   #   #   sudo apt-get install -y ripgrep fd-find jq
+  #   # Extra mount points (read-only by default).
+  #   # Supports simple paths or detailed specs with guest_path and writable.
+  #   # extra_mounts:
+  #   #   - ~/my-notes
+  #   #   - host_path: ~/data
+  #   #     guest_path: /mnt/data
+  #   #     writable: true
+  env_passthrough:
+    - JIRA_BASE_URL
+    - JIRA_API_TOKEN
