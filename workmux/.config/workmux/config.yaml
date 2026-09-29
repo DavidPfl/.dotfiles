@@ -21,6 +21,15 @@ agents:
       - opencode-go/deepseek-v4.1-flash
       - --thinking
       - high
+# Make project-local Agent Skills available in new worktrees, including skills
+# not yet committed in the main checkout. Symlink individual skill directories
+# so branch-specific skills already present in a worktree remain untouched.
+# Workmux bind-mounts both the main checkout and worktree into the sandbox,
+# allowing these symlinks to resolve there as well.
+files:
+  symlink:
+    - .agents/skills/*
+
 #-------------------------------------------------------------------------------
 # Sandbox
 #-------------------------------------------------------------------------------
@@ -34,7 +43,8 @@ sandbox:
   # /tmp/.pi/agent. Its symlinks (agents/prompts/extensions) are relative
   # -> ../../.dotfiles/pi/.pi/agent/... i.e. /tmp/.dotfiles/pi, and pi also
   # scans ~/.agents/skills i.e. /tmp/.agents/skills. Mount the *resolved*
-  # dirs onto those absolute paths so nothing dangles.
+  # dirs onto those absolute paths so nothing dangles. Project skills are
+  # provided by files.symlink above and the existing worktree/main-repo mounts.
   extra_mounts:
     # Personal skills: follow the ~/.agents/skills -> ~/.dotfiles/agents symlink
     # to the real dir, mounted where pi discovers Agent Skills.
@@ -43,6 +53,10 @@ sandbox:
     # Backs the ~/.pi/agent/{agents,prompts,extensions} relative symlinks.
     - host_path: ~/.dotfiles/pi
       guest_path: /tmp/.dotfiles/pi
+    # Java resolves user.home from the node user's passwd entry (/home/node),
+    # not HOME=/tmp. Maven reads its user settings from that path.
+    - host_path: ~/.m2/settings.xml
+      guest_path: /home/node/.m2/settings.xml
   container:
     runtime: podman # docker | podman | apple-container
   #   #   # memory: 16G            # VM memory limit (apple-container default: 16G)
@@ -83,3 +97,5 @@ sandbox:
   env_passthrough:
     - JIRA_BASE_URL
     - JIRA_API_TOKEN
+    - MAVEN_NEXUS_USER
+    - MAVEN_NEXUS_PASSWORD
