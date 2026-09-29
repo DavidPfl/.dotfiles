@@ -1,0 +1,72 @@
+FROM node:24-bookworm-slim
+
+# dash (Debian's default /bin/sh) doesn't support `set -o pipefail`, which
+# every RUN below relies on to catch failures inside curl/wget | ... pipes.
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+
+# util-linux provides `setpriv`, which we use to drop privileges in deny mode.
+# Unlike `gosu`, setpriv lets us explicitly set supplementary groups so that
+# Docker-style --group-add behaviour works for hardware access configured via
+# sandbox.container.group_add.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  curl \
+  ca-certificates \
+  git \
+  jq \
+  iptables \
+  util-linux \
+  maven \
+  python3 \
+  python3-pip \
+  gnupg \
+  && curl -fsSL https://packages.adoptium.net/artifactory/api/gpg/key/public \
+  | gpg --dearmor -o /usr/share/keyrings/adoptium-archive-keyring.gpg \
+  && echo "deb [signed-by=/usr/share/keyrings/adoptium-archive-keyring.gpg] https://packages.adoptium.net/artifactory/deb bookworm main" \
+  > /etc/apt/sources.list.d/adoptium.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends temurin-25-jdk \
+  && apt-get purge -y --auto-remove gnupg \
+  && rm -rf /var/lib/apt/lists/*
+
+# Embed network init script (sets up iptables firewall, then drops privileges)
+
+# Avoid Dockerfile heredoc syntax: Buildah 1.33.7 on Ubuntu/Debian
+# does not correctly parse it.
+COPY network-init.sh /usr/local/bin/network-init.sh
+RUN chmod +x /usr/local/bin/network-init.sh
+
+# Ensure host-exec shim directory is on PATH for login shells.
+# Agents like Codex run commands via login shell (bash -lc) which sources
+# /etc/profile, resetting PATH to system defaults and losing the shim
+# directory that workmux prepends. This profile.d script re-adds it.
+COPY workmux-shims.sh /etc/profile.d/workmux-shims.sh
+RUN chmod +x /etc/profile.d/workmux-shims.sh
+
+ARG CACHE_BUST=1
+
+# Install workmux (needed for sandbox RPC)
+RUN curl -fsSL https://raw.githubusercontent.com/raine/workmux/main/scripts/install.sh | bash
+
+# Install uv (Python package manager). Install into /usr/local/bin so the
+# `uv`/`uvx` binaries are on the global PATH and reachable when running as an
+# arbitrary non-root UID (--user uid:gid), rather than under $HOME/.local/bin.
+# UV_NO_MODIFY_PATH keeps the installer from editing shell profiles.
+RUN curl -LsSf https://astral.sh/uv/install.sh \
+  | env UV_INSTALL_DIR=/usr/local/bin UV_NO_MODIFY_PATH=1 sh
+
+# --- claude agent ---
+ARG CACHE_BUST=1
+
+# Install Claude Code, then move to a globally accessible path so the binary
+# is reachable when running as an arbitrary non-root UID (--user uid:gid).
+# RUN curl -fsSL https://claude.ai/install.sh | bash && \
+#  target="$(readlink -f /root/.local/bin/claude)" && \
+# mv /root/.local/share/claude /opt/claude && \
+# ln -s "/opt/claude/versions/$(basename "$target")" /usr/local/bin/claude && \
+# # Claude Code checks $HOME/.local/bin/claude when installMethod is "native".
+# # Container sets HOME=/tmp, so place a symlink to suppress the warning.
+# mkdir -p /tmp/.local/bin && \
+# ln -s /usr/local/bin/claude /tmp/.local/bin/claude && \
+# chmod 777 /tmp/.local
+
+RUN npm install -g --ignore-scripts @earendil-works/pi-coding-agent
