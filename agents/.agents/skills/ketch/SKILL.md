@@ -48,13 +48,14 @@ One question = one plan. Escalate a default run into `ketch research` when the f
 
 ## Local searxng backend — preflight before every search
 
-The operator's search backend is a **self-hosted searxng container**, not a third-party API. It is required for every `search` call (the configured default backend is `searxng`), so check it is running before the first search in a session — and start it when it is not. This is a one-time housekeeping step, not a configuration mutation.
+The operator's search backend is a **self-hosted searxng container**, not a third-party API. It is required for every `search` call (the configured default backend is `searxng`). This is a one-time housekeeping step, not a configuration mutation — and it is **probe-based**: ketch's own exit code is the source of truth, never `docker ps`.
 
-- **Check:** `docker ps --filter name=searxng --filter status=running --format '{{.Names}}'` — non-empty means the container is up.
-- **Start when down:** `docker compose -f ~/git/searxng/docker-compose.yml up -d --wait` — blocks until the `/healthz` healthcheck passes, so a green exit means ketch can reach `http://localhost:8100` right away.
-- **The config already points at it:** `ketch config` shows `backend: searxng`, `searxng_url: http://localhost:8100`. Do not re-run `ketch config set` — the container is the only thing that can be down, and a container is started with docker, not `config set`.
-- **Do not restart a healthy container.** If the check passes, move on. Starting it again is at best a waste and at worst kills a warm cache.
-- **If search still fails after the container is healthy** — exit 4 / `[upstream]` — the instance is up but rejecting requests (e.g. `format=json` disabled). Read `references/verbs/setup.md` before touching anything; do not rotate to a keyed backend on your own.
+- **Probe:** `ketch search "test" --limit 1 --minimal` — exit 0 means the backend is healthy; move on. This works in every environment, including workmux sandboxes where ketch runs on the host via `host-exec` and neither `docker` nor the searxng container is visible from the agent's shell — there, the probe is the *only* valid check.
+- **Only if the probe fails** — exit 4 / `[upstream]` — consider the container. Checking and starting it requires a **host shell** where `docker` is on PATH and the searxng container is visible (`docker ps --filter name=searxng --filter status=running`). From a sandboxed shell, do not attempt container management: report the failure to the operator instead.
+- **Start when down (host shell only, propose first):** `docker compose -f ~/.dotfiles/dev-container/docker-compose.yml up -d searxng --wait` — blocks until the `/healthz` healthcheck passes, so a green exit means ketch can reach the instance right away.
+- **The config already points at it:** `ketch config` shows `backend: searxng`, `searxng_url: http://localhost:8100`. That URL is **host-local** — it resolves where ketch runs (the host), not necessarily from the agent's shell, so do not "verify" it with curl from a sandbox. Do not re-run `ketch config set` — the container is the only thing that can be down, and a container is started with docker, not `config set`.
+- **Do not restart a healthy container.** If the probe passes, move on. Starting it again is at best a waste and at worst kills a warm cache.
+- **If the probe fails while the container is healthy** — the instance is up but rejecting requests (e.g. `format=json` disabled). Read `references/verbs/setup.md` before touching anything; do not rotate to a keyed backend on your own.
 
 ## Non-negotiable disciplines
 

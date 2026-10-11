@@ -7,7 +7,7 @@ Research takes one question and runs the full pipeline: search fan-out → scrap
 ## Preconditions
 
 - Transport is decided (SKILL.md): the CLI with `--json` by default; the MCP tools when the operator has wired them into the session.
-- **Searxng preflight (SKILL.md, "Local searxng backend"):** the search backend is a self-hosted searxng container. If `docker ps --filter name=searxng --filter status=running` is empty, start it with `docker compose -f ~/git/searxng/docker-compose.yml up -d --wait` before the first search call.
+- **Searxng preflight (SKILL.md, "Local searxng backend"):** the search backend is a self-hosted searxng container. Probe it with `ketch search "test" --limit 1 --minimal`; only on exit 4 / `[upstream]`, and only from a host shell where docker is available, start it with `docker compose -f ~/.dotfiles/dev-container/docker-compose.yml up -d searxng --wait` before the first search call. From a sandboxed shell, report the failure to the operator instead of attempting container management.
 - If any call returns `[precondition]` / exit 5, pause the run, switch to `ketch setup`, resume after the surface is configured.
 
 ---

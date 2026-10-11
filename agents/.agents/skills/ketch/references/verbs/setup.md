@@ -41,11 +41,12 @@ On older ketch versions without `doctor`, configured-state detection is imperfec
    ketch config set brave_api_key <key>
    ```
    The missing-key error itself contains the signup URL and the exact fix command — surface it to the operator rather than paraphrasing.
-3. **searxng — the self-hosted option.** No key, no third-party rate limits. **Stock searxng in docker rejects `format=json`**, which ketch requires — the operator's container already mounts a `settings.yml` with the json format enabled and is configured as the default backend (`searxng_url: http://localhost:8100`). Do not reconfigure it. If search fails, it is almost always the container being down — start it, do not `config set`:
+3. **searxng — the self-hosted option.** No key, no third-party rate limits. **Stock searxng in docker rejects `format=json`**, which ketch requires — the operator's container already mounts a `settings.yml` with the json format enabled and is configured as the default backend (`searxng_url: http://localhost:8100`, host-local). Do not reconfigure it. Diagnose with the probe first; if it fails, it is almost always the container being down — start it, do not `config set`. Container checks need a **host shell** where docker and the searxng container are both visible; from a sandboxed shell (e.g. workmux `host-exec`), report to the operator instead of attempting container management:
 
    ```sh
+   ketch search "test" -l 1    # probe: exit 0 = healthy, stop here
    docker ps --filter name=searxng --filter status=running
-   docker compose -f ~/git/searxng/docker-compose.yml up -d --wait
+   docker compose -f ~/.dotfiles/dev-container/docker-compose.yml up -d searxng --wait
    ketch search "test" -l 1    # verify: exit 0
    ```
 
